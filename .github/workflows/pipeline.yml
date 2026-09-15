@@ -1,42 +1,3 @@
-name: Process camp data & deploy dashboard
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - "data/raw/**"
-      - "scripts/**"
-      - "docs/**"
-      - ".github/workflows/pipeline.yml"
-  workflow_dispatch: {}
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run the data pipeline
-        run: python scripts/process_data.py
-
       - name: Commit refreshed data (if changed)
         run: |
           git config user.name "camp-data-bot"
@@ -44,19 +5,18 @@ jobs:
           if ! git diff --quiet -- docs/data/summary.json; then
             git add docs/data/summary.json
             git commit -m "chore: refresh dashboard data [skip ci]"
-            git push
+            for i in 1 2 3 4 5; do
+              if git push; then
+                echo "Pushed successfully."
+                break
+              fi
+              echo "Push rejected, pulling latest and retrying ($i/5)..."
+              git pull --rebase origin "${GITHUB_REF_NAME}"
+              if [ "$i" -eq 5 ]; then
+                echo "Giving up after 5 attempts."
+                exit 1
+              fi
+            done
           else
             echo "No data changes to commit."
           fi
-
-      - name: Set up GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload dashboard artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

@@ -23,12 +23,7 @@
 <nav class="topbar">
   <div class="container-fluid px-4 d-flex align-items-center justify-content-between">
     <div class="brand d-flex align-items-center gap-2">
-      <span class="brand-mark" aria-hidden="true">
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M13 3C13 3 5 8.2 5 14.6C5 19 8.6 22.5 13 22.5C17.4 22.5 21 19 21 14.6C21 8.2 13 3 13 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-          <path d="M13 9V17M9.5 13H16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </span>
+      <img src="https://swaasthyahospitals.com/assets/img/logo.png" alt="Swaasthya Hospitals logo" class="brand-logo" height="32">
       <div class="brand-text">
         <div class="brand-title">Pediatric Camp</div>
         <div class="brand-sub">Swaasthya Hospitals &middot; Health Screening Dashboard</div>
@@ -106,8 +101,8 @@
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-icon--blue">&#9878;&#65039;</div>
-      <div class="kpi-value" data-kpi="avgBMI">0</div>
-      <div class="kpi-label">Average BMI</div>
+      <div class="kpi-value" data-kpi="overweightPct">0%</div>
+      <div class="kpi-label">Overweight (BMI)</div>
     </div>
     <div class="kpi-card kpi-card--alert">
       <div class="kpi-icon kpi-icon--amber">&#9888;&#65039;</div>
@@ -182,14 +177,6 @@
       <div class="chart-canvas-wrap chart-canvas-wrap--tall"><canvas id="dentalChart"></canvas></div>
     </div>
 
-    <div class="chart-card chart-card--span3">
-      <div class="chart-card-head">
-        <h2>Vitals at a glance</h2>
-        <p>Average, lowest and highest reading recorded per vital sign.</p>
-      </div>
-      <div class="chart-canvas-wrap chart-canvas-wrap--tall"><canvas id="vitalsChart"></canvas></div>
-    </div>
-
   </section>
 
   <!-- ============ CHILDREN TABLE ============ -->
@@ -240,7 +227,8 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>

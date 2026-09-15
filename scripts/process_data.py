@@ -306,9 +306,11 @@ def main():
             "screened": len(screening),
             "dentalScreened": dental_total,
             "vitalsRecorded": vitals["UHID"].nunique() if not vitals.empty else 0,
-            "avgBMI": round(float(bmi_vals.mean()), 1) if not bmi_vals.empty else None,
             "underweightPct": round(
                 100 * bmi_status_counts.get("Underweight", 0) / max(len(screening), 1), 1
+            ),
+            "overweightPct": round(
+                100 * bmi_status_counts.get("Overweight", 0) / max(len(screening), 1), 1
             ),
             "visionIssues": vision_counts.get("Deficient", 0),
             "referralsNeeded": referral_count,

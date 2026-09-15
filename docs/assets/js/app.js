@@ -25,6 +25,14 @@
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
   Chart.defaults.plugins.legend.labels.boxWidth = 8;
 
+  if (typeof ChartDataLabels !== "undefined") {
+    Chart.register(ChartDataLabels);
+  }
+  Chart.defaults.set("plugins.datalabels", {
+    color: COLORS.ink,
+    font: { weight: 600, size: 11 },
+  });
+
   const state = {
     data: null,
     filters: { gender: "all", age: "all" },
@@ -144,20 +152,18 @@
     renderBmiHistChart(children);
     renderVisionChart(children);
     renderDentalChart(); // camp-wide (per-condition breakdown isn't per-child in source data)
-    renderVitalsChart(); // camp-wide
     renderTable();
   }
 
   function renderKPIs(children) {
     const total = children.length;
-    const bmis = children.map((c) => c.bmi).filter((v) => typeof v === "number" && !isNaN(v));
-    const avgBmi = bmis.length ? bmis.reduce((a, b) => a + b, 0) / bmis.length : 0;
     const underweight = children.filter((c) => c.bmiStatus === "Underweight").length;
+    const overweight = children.filter((c) => c.bmiStatus === "Overweight").length;
     const visionIssues = children.filter((c) => c.vision === "Deficient").length;
     const dentalDone = children.filter((c) => c.dentalScreened).length;
 
     setKpi("totalChildren", total);
-    setKpi("avgBMI", bmis.length ? avgBmi.toFixed(1) : "—");
+    setKpi("overweightPct", total ? Math.round((100 * overweight) / total) + "%" : "0%");
     setKpi("underweightPct", total ? Math.round((100 * underweight) / total) + "%" : "0%");
     setKpi("visionIssues", visionIssues);
     setKpi("dentalScreened", dentalDone);
@@ -204,7 +210,14 @@
           x: { stacked: false, grid: { display: false } },
           y: { beginAtZero: true, grid: { color: COLORS.grid }, ticks: { precision: 0 } },
         },
-        plugins: { legend: { position: "top", align: "end" } },
+        plugins: {
+          legend: { position: "top", align: "end" },
+          datalabels: {
+            anchor: "end",
+            align: "top",
+            formatter: (v) => (v ? v : ""),
+          },
+        },
       },
     });
   }
@@ -225,7 +238,16 @@
         responsive: true,
         maintainAspectRatio: false,
         cutout: "68%",
-        plugins: { legend: { position: "bottom" } },
+        plugins: {
+          legend: { position: "bottom" },
+          datalabels: {
+            color: "#fff",
+            formatter: (v, ctx) => {
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              return total ? `${v}\n${Math.round((100 * v) / total)}%` : v;
+            },
+          },
+        },
       },
     });
   }
@@ -243,7 +265,16 @@
         responsive: true,
         maintainAspectRatio: false,
         cutout: "68%",
-        plugins: { legend: { position: "bottom" } },
+        plugins: {
+          legend: { position: "bottom" },
+          datalabels: {
+            color: "#fff",
+            formatter: (v, ctx) => {
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              return total ? `${v}\n${Math.round((100 * v) / total)}%` : v;
+            },
+          },
+        },
       },
     });
   }
@@ -266,7 +297,14 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            anchor: "end",
+            align: "top",
+            formatter: (v) => (v ? v : ""),
+          },
+        },
         scales: {
           x: { grid: { display: false }, title: { display: true, text: "BMI range" } },
           y: { beginAtZero: true, grid: { color: COLORS.grid }, ticks: { precision: 0 } },
@@ -291,7 +329,14 @@
         indexAxis: "y",
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            anchor: "end",
+            align: "right",
+            formatter: (v) => (v ? v : ""),
+          },
+        },
         scales: {
           x: { beginAtZero: true, grid: { color: COLORS.grid }, ticks: { precision: 0 } },
           y: { grid: { display: false } },
@@ -314,38 +359,17 @@
         indexAxis: "y",
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            anchor: "end",
+            align: "right",
+            formatter: (v) => (v ? v : ""),
+          },
+        },
         scales: {
           x: { beginAtZero: true, grid: { color: COLORS.grid }, ticks: { precision: 0 } },
           y: { grid: { display: false } },
-        },
-      },
-    });
-  }
-
-  function renderVitalsChart() {
-    const vitals = state.data.vitals || {};
-    const labels = Object.keys(vitals);
-    const avg = labels.map((k) => vitals[k].avg);
-    const min = labels.map((k) => vitals[k].min);
-    const max = labels.map((k) => vitals[k].max);
-    upsertChart("vitalsChart", {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [
-          { label: "Min", data: min, backgroundColor: COLORS.tealTint, borderRadius: 4, maxBarThickness: 26 },
-          { label: "Average", data: avg, backgroundColor: COLORS.teal, borderRadius: 4, maxBarThickness: 26 },
-          { label: "Max", data: max, backgroundColor: COLORS.coral, borderRadius: 4, maxBarThickness: 26 },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: "top", align: "end" } },
-        scales: {
-          x: { grid: { display: false } },
-          y: { beginAtZero: true, grid: { color: COLORS.grid } },
         },
       },
     });

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T09:24:03.391053+00:00",
+  "generatedAt": "2026-09-15T09:29:44.754710+00:00",
   "sourceFiles": [
     "1789456375737_formatted_template_1789126731753.csv",
     "1789456375739_formatted_template_1789126750702.csv",
@@ -12,8 +12,8 @@
     "screened": 182,
     "dentalScreened": 101,
     "vitalsRecorded": 182,
-    "avgBMI": 16.9,
     "underweightPct": 70.9,
+    "overweightPct": 6.0,
     "visionIssues": 10,
     "referralsNeeded": 0
   },

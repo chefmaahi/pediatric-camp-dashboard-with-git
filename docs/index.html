@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pediatric Camp &mdash; Health Screening Dashboard</title>
+<meta name="description" content="Health screening outcomes from the Pediatric Camp: vision, BMI, dental and vitals data.">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- App styles -->
+<link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="topbar">
+  <div class="container-fluid px-4 d-flex align-items-center justify-content-between">
+    <div class="brand d-flex align-items-center gap-2">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 3C13 3 5 8.2 5 14.6C5 19 8.6 22.5 13 22.5C17.4 22.5 21 19 21 14.6C21 8.2 13 3 13 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M13 9V17M9.5 13H16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <div class="brand-title">Pediatric Camp</div>
+        <div class="brand-sub">Swaasthya Hospitals &middot; Health Screening Dashboard</div>
+      </div>
+    </div>
+    <div class="d-none d-md-flex align-items-center gap-3">
+      <span class="live-pill"><span class="live-dot"></span>Data current as of <span id="generatedAt">&mdash;</span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <svg class="hero-pulse" viewBox="0 0 1200 200" preserveAspectRatio="none" aria-hidden="true">
+    <path id="pulsePath" d="M0,100 L220,100 L250,40 L280,160 L310,20 L340,100 L400,100 L430,70 L460,130 L490,100 L1200,100" fill="none" stroke="currentColor" stroke-width="2"/>
+  </svg>
+  <div class="container-fluid px-4">
+    <div class="row align-items-end gy-4">
+      <div class="col-lg-7">
+        <p class="hero-eyebrow">School health screening &bull; ages 6&ndash;18</p>
+        <h1 class="hero-title">Every child screened tells<br>us where to look next.</h1>
+        <p class="hero-copy">
+          This dashboard reads directly from the camp's screening, dental and vitals
+          records and keeps only the children seen under the Pediatric Camp. Filter by
+          gender or age group below to see how the findings shift.
+        </p>
+      </div>
+      <div class="col-lg-5">
+        <div class="hero-stat">
+          <div class="hero-stat-number" id="heroCount" data-target="0">0</div>
+          <div class="hero-stat-label">children screened at the camp</div>
+          <div class="hero-stat-foot">
+            <span id="heroDentalNote">&mdash;</span> also received a dental check,
+            <span id="heroVitalsNote">&mdash;</span> had vitals recorded.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ FILTER BAR (SLICER) ============ -->
+<div class="filterbar sticky-top">
+  <div class="container-fluid px-4">
+    <div class="d-flex flex-wrap align-items-center gap-2 py-2">
+      <span class="filter-label">Filter</span>
+
+      <div class="btn-group filter-group" role="group" aria-label="Filter by gender" id="genderFilter">
+        <button type="button" class="btn filter-chip active" data-filter="gender" data-value="all">All genders</button>
+        <button type="button" class="btn filter-chip" data-filter="gender" data-value="Female">Girls</button>
+        <button type="button" class="btn filter-chip" data-filter="gender" data-value="Male">Boys</button>
+      </div>
+
+      <div class="btn-group filter-group" role="group" aria-label="Filter by age band" id="ageFilter">
+        <button type="button" class="btn filter-chip active" data-filter="age" data-value="all">All ages</button>
+        <button type="button" class="btn filter-chip" data-filter="age" data-value="0-5">0&ndash;5</button>
+        <button type="button" class="btn filter-chip" data-filter="age" data-value="6-10">6&ndash;10</button>
+        <button type="button" class="btn filter-chip" data-filter="age" data-value="11-14">11&ndash;14</button>
+        <button type="button" class="btn filter-chip" data-filter="age" data-value="15-18">15&ndash;18</button>
+      </div>
+
+      <button type="button" class="btn filter-reset ms-auto" id="resetFilters">Reset filters</button>
+    </div>
+  </div>
+</div>
+
+<main class="container-fluid px-4">
+
+  <!-- ============ KPI CARDS ============ -->
+  <section class="kpi-grid" aria-label="Key indicators">
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--teal">&#128100;</div>
+      <div class="kpi-value" data-kpi="totalChildren">0</div>
+      <div class="kpi-label">Children screened</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--blue">&#9878;&#65039;</div>
+      <div class="kpi-value" data-kpi="avgBMI">0</div>
+      <div class="kpi-label">Average BMI</div>
+    </div>
+    <div class="kpi-card kpi-card--alert">
+      <div class="kpi-icon kpi-icon--amber">&#9888;&#65039;</div>
+      <div class="kpi-value" data-kpi="underweightPct">0%</div>
+      <div class="kpi-label">Underweight (BMI)</div>
+    </div>
+    <div class="kpi-card kpi-card--alert">
+      <div class="kpi-icon kpi-icon--coral">&#128065;&#65039;</div>
+      <div class="kpi-value" data-kpi="visionIssues">0</div>
+      <div class="kpi-label">Vision deficiency flags</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--teal">&#129688;</div>
+      <div class="kpi-value" data-kpi="dentalScreened">0</div>
+      <div class="kpi-label">Dental checks done</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--blue">&#128200;</div>
+      <div class="kpi-value" data-kpi="vitalsRecorded">0</div>
+      <div class="kpi-label">Vitals on record</div>
+    </div>
+  </section>
+
+  <!-- ============ CHARTS ============ -->
+  <section class="charts-grid">
+
+    <div class="chart-card chart-card--span2">
+      <div class="chart-card-head">
+        <h2>Age &amp; gender mix</h2>
+        <p>How many children in each age band, split by gender.</p>
+      </div>
+      <div class="chart-canvas-wrap chart-canvas-wrap--tall"><canvas id="ageGenderChart"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-head">
+        <h2>Gender split</h2>
+        <p>Share of children screened.</p>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="genderChart"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-head">
+        <h2>BMI status</h2>
+        <p>Underweight, normal and overweight counts.</p>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="bmiStatusChart"></canvas></div>
+    </div>
+
+    <div class="chart-card chart-card--span2">
+      <div class="chart-card-head">
+        <h2>BMI distribution</h2>
+        <p>Spread of individual BMI readings across the camp.</p>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="bmiHistChart"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-head">
+        <h2>Vision screening</h2>
+        <p>Distant vision test outcomes.</p>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="visionChart"></canvas></div>
+    </div>
+
+    <div class="chart-card chart-card--span2">
+      <div class="chart-card-head">
+        <h2>Dental findings</h2>
+        <p>Children flagged for each dental condition, out of <span id="dentalTotalNote">&mdash;</span> checked.</p>
+      </div>
+      <div class="chart-canvas-wrap chart-canvas-wrap--tall"><canvas id="dentalChart"></canvas></div>
+    </div>
+
+    <div class="chart-card chart-card--span3">
+      <div class="chart-card-head">
+        <h2>Vitals at a glance</h2>
+        <p>Average, lowest and highest reading recorded per vital sign.</p>
+      </div>
+      <div class="chart-canvas-wrap chart-canvas-wrap--tall"><canvas id="vitalsChart"></canvas></div>
+    </div>
+
+  </section>
+
+  <!-- ============ CHILDREN TABLE ============ -->
+  <section class="table-section">
+    <div class="table-card">
+      <div class="table-card-head d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>
+          <h2>Screened children</h2>
+          <p>Search by name or UHID. The filters above also apply here.</p>
+        </div>
+        <input type="search" id="tableSearch" class="form-control table-search" placeholder="Search name or UHID&hellip;">
+      </div>
+      <div class="table-responsive">
+        <table class="table camp-table" id="childrenTable">
+          <thead>
+            <tr>
+              <th>UHID</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Gender</th>
+              <th>BMI</th>
+              <th>BMI status</th>
+              <th>Vision</th>
+              <th>Dental check</th>
+            </tr>
+          </thead>
+          <tbody id="childrenTableBody"></tbody>
+        </table>
+      </div>
+      <div class="table-card-foot d-flex align-items-center justify-content-between">
+        <span id="tableCount" class="text-muted small"></span>
+        <div class="pagination-controls">
+          <button class="btn btn-sm" id="prevPage" type="button">&larr; Prev</button>
+          <span id="pageIndicator" class="small mx-2">Page 1</span>
+          <button class="btn btn-sm" id="nextPage" type="button">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container-fluid px-4 d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <p class="mb-0">Built from <span id="sourceFileCount">&mdash;</span> source file(s) processed by the camp data pipeline. Aggregated screening data &mdash; not a diagnostic record.</p>
+    <p class="mb-0 text-muted">Pediatric Camp Dashboard</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

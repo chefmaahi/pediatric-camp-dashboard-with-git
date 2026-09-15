@@ -44,7 +44,18 @@ jobs:
           if ! git diff --quiet -- docs/data/summary.json; then
             git add docs/data/summary.json
             git commit -m "chore: refresh dashboard data [skip ci]"
-            git push
+            for i in 1 2 3 4 5; do
+              if git push; then
+                echo "Pushed successfully."
+                break
+              fi
+              echo "Push rejected, pulling latest and retrying ($i/5)..."
+              git pull --rebase origin "${GITHUB_REF_NAME}"
+              if [ "$i" -eq 5 ]; then
+                echo "Giving up after 5 attempts."
+                exit 1
+              fi
+            done
           else
             echo "No data changes to commit."
           fi

@@ -106,7 +106,12 @@ a{ color: var(--teal); }
 /* --------------------------------------------------------------- Hero --- */
 .hero{
   position: relative;
-  background: linear-gradient(180deg, #0B4C44 0%, #0F6E63 62%, #12796D 100%);
+  background:
+    linear-gradient(180deg, rgba(11,76,68,0.92) 0%, rgba(15,110,99,0.88) 62%, rgba(18,121,109,0.92) 100%),
+    url('img/hero-banner.jpg');
+  background-size: cover;
+  background-position: center 30%;
+  background-repeat: no-repeat;
   color: #F2F6F5;
   padding: 3.5rem 0 3rem;
   overflow: hidden;

@@ -370,3 +370,138 @@ a{ color: var(--teal); }
   from{ opacity: 0.35; transform: translateY(3px); }
   to{ opacity: 1; transform: translateY(0); }
 }
+
+/* =========================================================================
+   Visual enhancement pass — richer shadows + modern card treatment
+   Purely additive: no existing rule above is modified, these rules layer
+   on top via the cascade to lift depth, add motion and sharpen hierarchy.
+   ========================================================================= */
+
+:root{
+  --shadow-soft: 0 1px 2px rgba(23,36,32,0.05), 0 2px 6px rgba(23,36,32,0.05);
+  --shadow-elevated: 0 2px 4px rgba(23,36,32,0.06), 0 16px 32px -14px rgba(15,110,99,0.28);
+  --shadow-elevated-hover: 0 6px 14px rgba(23,36,32,0.10), 0 26px 46px -18px rgba(15,110,99,0.38);
+  --shadow-inset-glow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* Softly textured page backdrop so white cards have something to lift off */
+body{
+  background:
+    radial-gradient(circle at 8% 0%, rgba(15,110,99,0.06), transparent 42%),
+    radial-gradient(circle at 92% 12%, rgba(45,110,142,0.06), transparent 40%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+/* Nav gets a hint of lift instead of a flat line */
+.topbar{
+  box-shadow: 0 1px 0 rgba(23,36,32,0.02), 0 6px 18px -14px rgba(23,36,32,0.35);
+}
+
+/* ---- KPI cards: deeper, colour-tinted shadow + top accent + icon glow --- */
+.kpi-card{
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-elevated);
+  border-color: rgba(220,230,226,0.7);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FCFDFD 100%);
+}
+.kpi-card::before{
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--teal), var(--blue));
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.kpi-card--alert::before{ background: linear-gradient(90deg, var(--amber), var(--coral)); }
+.kpi-card:hover{
+  box-shadow: var(--shadow-elevated-hover);
+  transform: translateY(-5px);
+  border-color: transparent;
+}
+.kpi-card:hover::before{ opacity: 1; }
+
+.kpi-icon{
+  box-shadow: var(--shadow-inset-glow), 0 4px 10px -4px rgba(23,36,32,0.25);
+  transition: transform 0.25s ease;
+}
+.kpi-card:hover .kpi-icon{ transform: scale(1.08) rotate(-3deg); }
+
+.kpi-value{ letter-spacing: -0.01em; }
+
+/* ---- Chart cards: elevated surface + hover lift + refined headers ------ */
+.chart-card{
+  position: relative;
+  box-shadow: var(--shadow-elevated);
+  border-color: rgba(220,230,226,0.7);
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
+}
+.chart-card:hover{
+  box-shadow: var(--shadow-elevated-hover);
+  transform: translateY(-3px);
+}
+.chart-card-head{
+  border-bottom: 1px solid var(--surface-soft);
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+.chart-card-head h2{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.chart-card-head h2::before{
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  flex-shrink: 0;
+}
+
+/* ---- Table card: same elevated treatment, crisper rows ----------------- */
+.table-card{
+  box-shadow: var(--shadow-elevated);
+  border-color: rgba(220,230,226,0.7);
+  transition: box-shadow 0.22s ease;
+}
+.table-card:hover{ box-shadow: var(--shadow-elevated-hover); }
+
+.camp-table tbody tr{
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+.camp-table tbody tr:hover{
+  background: var(--surface-soft);
+  box-shadow: inset 3px 0 0 var(--teal);
+}
+
+.badge-status{
+  box-shadow: 0 1px 2px rgba(23,36,32,0.08);
+}
+
+/* ---- Hero stat card gets a touch more depth against the gradient ------- */
+.hero-stat{
+  box-shadow: 0 20px 44px -18px rgba(0,0,0,0.45), var(--shadow-inset-glow);
+}
+
+/* ---- Filter chips: subtle depth so the active state feels tactile ------ */
+.filter-chip{
+  box-shadow: var(--shadow-soft);
+}
+.filter-chip.active{
+  box-shadow: 0 4px 10px -2px rgba(15,110,99,0.45);
+}
+
+/* ---- Footer separated with a touch more presence ------------------------ */
+.site-footer{
+  background: var(--surface);
+  box-shadow: 0 -6px 18px -18px rgba(23,36,32,0.35);
+}
+
+/* ---- Motion respects reduced-motion preference, matching rule above ---- */
+@media (prefers-reduced-motion: reduce){
+  .kpi-card:hover, .chart-card:hover, .kpi-card:hover .kpi-icon{
+    transform: none;
+  }
+}
